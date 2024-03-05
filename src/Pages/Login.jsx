@@ -1,6 +1,11 @@
 import LoginForm from "../Components/LoginForm";
+import {useContext} from "react";
+import JWTContext from "../JWTContext";
 
-function Login() {
+export default function Login() {
+    const {checkToken} = useContext(JWTContext);
+    checkToken();
+
     return (
       <div className="flex justify-center items-center w-full h-[80vh]">
         <LoginForm/>
@@ -8,4 +13,3 @@ function Login() {
     );
   }
   
-  export default Login;

@@ -1,5 +1,7 @@
 import {Button, Card, CardContent} from '@mui/material';
 import { Link } from 'react-router-dom';
+import {useContext, useEffect} from "react";
+import JWTContext from "../JWTContext";
 
 const styles = {
   // ... (autres styles)
@@ -11,6 +13,12 @@ const styles = {
 };
 
 function Home() {
+    const {jwt, checkToken} = useContext(JWTContext);
+
+    useEffect(()=>{
+        checkToken();
+    }, [checkToken, jwt])
+
     return (
       <div className="h-hero flex flex-wrap justify-center content-center">
         <div className='w-1/2 flex flex-wrap justify-between'>

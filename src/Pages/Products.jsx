@@ -1,8 +1,9 @@
-import { React, useEffect, useState } from "react"
+import {React, useCallback, useContext, useEffect, useState} from "react"
 
 //Components Import
-import Product from "../Components/Product"
+import Product from "../Components/ProductCard"
 import { FormControl, MenuItem, Select, TextField, InputLabel } from "@mui/material";
+import JWTContext from "../JWTContext";
 
 const styles = {
     bannerTop:{
@@ -14,61 +15,42 @@ const styles = {
 }
 
 export default function Products() {
-    let [items, setItems] = useState();
-    let [categories, setCategories] = useState();
+    const {checkToken} = useContext(JWTContext);
+    let [items, setItems] = useState([]);
+    let [categories, setCategories] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState(0);
 
-    const handleCategoryChange = ((event)=>{
-        if(event.target.value == "0"){
-            fetchAllProducts()
-        } else {
-            fetchAllProductsFromCategory(event.target.value)
-        }
-    });
+    checkToken();
 
-    const handleSearchChange = ((event)=>{
-        if(event.target.value == ""){
-            fetchAllProducts()
-        } else {
-            fetchAllProductsBySearchQuery(event.target.value)
-        }
-    })
-
-    const fetchAllCategories = (async ()=>{
-        return await fetch("https://api.escuelajs.co/api/v1/categories?limit=10")
-            .then((response)=>{
-                return response
-            })
-            .catch((error)=>{console.log("IMPOSSIBLE DE RECUPERER LES CATEGORIES : " + error)});
-    })
-    
-    const fetchAllProducts = (async ()=>{
-        return await fetch("https://api.escuelajs.co/api/v1/products?limit=16&offset=0")
+    const fetchAllProducts = useCallback( ()=>{
+        fetch("https://api.escuelajs.co/api/v1/products?limit=16&offset=0")
             .then((response)=>response.json())
             .then((data)=>{
                 let productCounter = 0;
-                setItems(data.map((productData)=>{
+                setItems(data.map((productData) => {
                     productCounter+=1;
                     if(productCounter <=16){
-                        return(<div className="flex flex-wrap justify-center">
-                        <Product key={productData.title} data={productData}/>
-                        </div>)
+                        return productData;
+                    } else {
+                        return null;
                     }
                 }))
             })
             .catch((error)=>{console.log("IMPOSSIBLE DE RECUPERER LES ITEMS : " + error)});
-    })
+    }, [])
+
     
     const fetchAllProductsFromCategory = ( async (category_id)=>{
         return await fetch("https://api.escuelajs.co/api/v1/products/?limit=16&categoryId=" + category_id)
             .then((response)=>response.json())
             .then((data)=>{
                 let productCounter = 0;
-                setItems(data.map((productData)=>{
+                setItems(data.map((productData) => {
                     productCounter+=1;
                     if(productCounter <=16){
-                        return(<div className="flex flex-wrap justify-center">
-                        <Product key={productData.title} data={productData}/>
-                        </div>)
+                        return productData;
+                    } else {
+                        return null;
                     }
                 }))
             })
@@ -83,54 +65,83 @@ export default function Products() {
                 setItems(data.map((productData)=>{
                     productCounter+=1;
                     if(productCounter <=16){
-                        return(<div className="flex flex-wrap justify-center">
-                        <Product key={productData.title} data={productData}/>
-                        </div>)
+                        return productData;
+                    } else {
+                        return null;
                     }
                 }))
             })
             .catch((error)=>{console.log("IMPOSSIBLE DE RECUPERER LES ITEMS : " + error)});
     })
-    
+
+    const handleCategoryChange = ((event)=>{
+        setSelectedCategory(event.target.value);
+        if(event.target.value === 0){
+            fetchAllProducts()
+        } else {
+            fetchAllProductsFromCategory(event.target.value);
+        }
+    });
+
+    const handleSearchChange = ((event)=>{
+        if(event.target.value.toString() === ""){
+            fetchAllProducts()
+        } else {
+            fetchAllProductsBySearchQuery(event.target.value);
+        }
+    })
 
     useEffect(()=>{
-        fetchAllProducts()
 
-        fetchAllCategories()
-            .then((response)=>response.json())
-            .then((data)=>{
-                setCategories(data.map((categoryData)=>{
-                    return <MenuItem value={categoryData.id}>{categoryData.name}</MenuItem>
-                }));
-            })
+        const fetchAllCategories = (()=>{
+            fetch("https://api.escuelajs.co/api/v1/categories?limit=10")
+                .then((response)=>response.json())
+                .then((data)=>{
+                    setCategories(data);
+                })
+                .catch((error)=>{console.log("IMPOSSIBLE DE RECUPERER LES CATEGORIES : " + error)});
+        })
 
-    },[]) 
+        fetchAllCategories();
+
+        fetchAllProducts();
+
+    },[fetchAllProducts])
 
     return(<div className="">
         <div className="h-36" style={{...styles.bannerTop}}></div>
         <div id="content" className="w-full flex flex-wrap justify-center">
-            <div className="container">
-                <div className="w-full bg-gray-300 flex flex-wrap justify-evenly">
-                    <div className=" my-4 w-1/3">
-                        <FormControl fullWidth>
-                            <InputLabel id="categories-label">Catégorie</InputLabel>
-                            <Select labelId="categories-label" id="category-select" className="category-select123" label="Categorie" onChange={handleCategoryChange}>
-                                <MenuItem value="0">--</MenuItem>
-                                {categories}
-                            </Select>
-                        </FormControl>
-                    </div>
-                    <div className="my-4 w-1/3">
-                        <TextField 
-                            id="outlined-search" 
-                            label="Rechercher" 
-                            type="search"
-                            onChange={handleSearchChange}
-                        />
-                    </div>
+            <div className="w-full bg-gray-300 flex flex-wrap justify-evenly mb-6">
+                <div className=" my-4 w-1/3">
+                    <FormControl fullWidth>
+                        <InputLabel id="category-input-label">Catégories</InputLabel>
+                        <Select labelId="category-input-label"
+                            id="demo-simple-select"
+                            onChange={handleCategoryChange}
+                            label="Catégories"
+                            value={selectedCategory}>
+                            <MenuItem value={0}>Toutes les catégories</MenuItem>
+                            {categories === [] ? null : categories.map((category)=>{ return <MenuItem key={category.id} value={category.id}>{category.name}</MenuItem> })}
+                        </Select>
+                    </FormControl>
                 </div>
+                <div className="my-4 w-1/3">
+                    <TextField
+                        id="outlined-search"
+                        label="Rechercher"
+                        type="search"
+                        onChange={handleSearchChange}
+                        fullWidth
+                    />
+                </div>
+            </div>
+            <div className="container">
                 <div id="products-container" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
-                    {items}
+                    {items.map((item, index)=>{
+                        return(<div key={index} className="flex flex-wrap justify-center">
+                            <Product data={item}/>
+                        </div>);
+                    })}
                 </div>
             </div>
         </div>
