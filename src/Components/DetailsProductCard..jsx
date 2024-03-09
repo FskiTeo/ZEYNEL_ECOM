@@ -10,7 +10,7 @@ export default function DetailsProductCard(props) {
 
     const images = JSON.parse(props.data.images);
 
-    const handleAddToCart = (event) => {
+    const handleAddToCart = () => {
         const cookies = new Cookies();
         if(cookies.get('cart') === undefined) {
             cookies.set('cart',[{id: props.data.id, title: props.data.title, quantity: 1, price: props.data.price}], {path: '/'})

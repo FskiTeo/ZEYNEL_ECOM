@@ -4,7 +4,7 @@ import {Card, CardContent} from "@mui/material";
 import {Link} from "react-router-dom";
 import cartContext from "../CartContext";
 
-export default function CartCard(callback, deps){
+export default function CartCard(){
     const [cartContent, setCartContent] = useState([])
     const [cartTotals, setCartTotals] = useState({total: 0, items: 0})
     const {updateCartQuantity} = useContext(cartContext);

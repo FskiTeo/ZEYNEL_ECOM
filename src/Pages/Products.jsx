@@ -1,4 +1,4 @@
-import {React, useCallback, useContext, useEffect, useState} from "react"
+import React, {useCallback, useContext, useEffect, useState} from "react"
 
 //Components Import
 import Product from "../Components/ProductCard"
