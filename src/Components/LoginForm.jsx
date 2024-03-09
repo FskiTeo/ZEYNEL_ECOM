@@ -1,9 +1,9 @@
 import {Button, Card, TextField, CardContent, Alert} from '@mui/material';
 import axios from "axios";
-import {useContext, useEffect, useState} from "react";
+import {useContext, useEffect} from "react";
 import JWTContext from "../JWTContext";
 import Cookies from 'universal-cookie';
-import {Navigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
 
 const styles = {
@@ -17,7 +17,7 @@ const styles = {
 export default function LoginForm() {
 
     const {jwt, setToken} = useContext(JWTContext);
-    const [redirect, setRedirect] = useState(null);
+    const navigate = useNavigate();
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -25,7 +25,6 @@ export default function LoginForm() {
         let inputPassword = document.getElementById('outlined-password-input').value;
         let validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
         if (inputEmail.match(validRegex)) {
-            console.log('Email valide');
             if (inputPassword.length >= 3) {
                 let loginObject = {
                     email: inputEmail,
@@ -51,11 +50,10 @@ export default function LoginForm() {
         await axios.post('https://api.escuelajs.co/api/v1/auth/login', loginObject)
             .then(response => response.data)
             .then(data => {
-                console.log(data);
                 setToken(data.access_token);
                 const cookies = new Cookies();
                 cookies.set('refreshToken', data.refresh_token, {path: '/'});
-                setRedirect(<Navigate to="/profile"/>);
+                navigate('/profile');
 
             })
             .catch(() => {
@@ -67,13 +65,12 @@ export default function LoginForm() {
     });
 
     useEffect(() => {
-
         if(jwt !== "" && jwt !== undefined && jwt !== null){
-            setRedirect(<Navigate to="/profile"/>);
+            navigate('/profile');
         }
-    }, [jwt])
+    }, [jwt, navigate])
 
-    return (redirect !== null ? redirect : <div className="w-1/2 lg:w-1/3">
+    return (<div className="w-2/3 md:1/2 lg:w-1/3">
                 <Card className="w-full">
                     <CardContent className="space-y-4">
                         <h3 className="text-2xl font-bold">Login</h3>

@@ -21,7 +21,7 @@ function Home() {
 
     return (
       <div className="h-hero flex flex-wrap justify-center content-center">
-        <div className='w-1/2 flex flex-wrap justify-between'>
+        <div className='w-2/3 md:w-1/2 flex flex-wrap justify-between'>
             <Card className='w-full h-full text-center'>
               <CardContent>
                 <h1 className="text-4xl font-bold mb-6">BIENVENUE SUR ZEYNEL ECOM</h1>

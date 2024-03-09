@@ -21,3 +21,15 @@ Pour lancer l'application sur un serveur de développement
 ### `npm build`
 
 Pour build l'application (optimisation, mise en production)
+
+## INFORMATIONS SUPPLEMENTAIRES
+
+Vous pouvez vous logger avec les identifiants suivants : 
+  - email: `john@mail.com`
+  - password: `changeme`
+
+La doc swagger de l'api est disponible à l'adresse suivante : 
+  - [Swagger](https://api.escuelajs.co/docs)
+
+La doc écrite de l'app est disponible à l'adresse suivante : 
+  - [Documentation](https://fakeapi.platzi.com/en/about/introduction/)

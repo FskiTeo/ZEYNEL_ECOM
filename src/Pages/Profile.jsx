@@ -4,7 +4,7 @@ import {useNavigate} from "react-router-dom";
 import axios from "axios";
 
 
-import ProfilePage from "../Components/ProfilePage";
+import ProfileCard from "../Components/ProfileCard";
 
 export default function Profile() {
     const {jwt, checkToken} = useContext(JWTContext);
@@ -24,7 +24,7 @@ export default function Profile() {
                 .then(data => {
                     setUserData(data);
                 })
-                .catch((error) => {
+                .catch(() => {
                     console.log('Erreur dans le fetchUserData');
                 })
 
@@ -37,7 +37,7 @@ export default function Profile() {
         }
     }, [jwt, navigate])
 
-    return (<div>
-        {<ProfilePage userData={userData}/>}
+    return (<div className="w-full min-h-hero flex justify-center items-center">
+        {userData === null ? <div>Loading</div> : <ProfileCard userData={userData}/>}
     </div>)
 }

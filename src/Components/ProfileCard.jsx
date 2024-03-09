@@ -16,7 +16,7 @@ export default function ProfileCard(props) {
     const {setToken} = useContext(JWTContext);
 
     const handleLogout = (() => {
-        setToken('');
+        setToken(null);
         const cookies = new Cookies();
         cookies.remove('refreshToken');
         navigate('/login');

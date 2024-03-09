@@ -25,7 +25,7 @@ export default function P(){
     }, [routeParams.id])
 
     return(
-        <div className="h-hero flex flex-wrap justify-center items-center">
+        <div className="min-h-hero flex flex-wrap justify-center items-center">
             {item === undefined ? <p>Chargement...</p> : <DetailsProductCard data={item}/> }
         </div>
     )
